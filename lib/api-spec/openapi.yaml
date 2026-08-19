@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: genealogy
+    description: Verified family genealogy
 paths:
   /healthz:
     get:
@@ -24,6 +26,77 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /v1/genealogy/tree:
+    get:
+      operationId: getGenealogyTree
+      tags: [genealogy]
+      summary: Get a nearby verified family tree
+      parameters:
+        - name: centerPersonId
+          in: query
+          required: false
+          schema:
+            type: string
+            default: suman
+        - name: generations
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 5
+            default: 3
+      responses:
+        "200":
+          description: People and verified direct relationships near the center
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/GenealogyTree"
+  /v1/people/search:
+    get:
+      operationId: searchPeople
+      tags: [genealogy]
+      summary: Search permitted genealogy people
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 1
+      responses:
+        "200":
+          description: Matching verified people
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/GenealogyPerson"
+  /v1/relationships/find:
+    get:
+      operationId: findRelationship
+      tags: [genealogy]
+      summary: Find the shortest verified relationship path
+      parameters:
+        - name: fromPersonId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: toPersonId
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Relationship result
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RelationshipResult"
 components:
   schemas:
     HealthStatus:
@@ -33,4 +106,68 @@ components:
           type: string
       required:
         - status
+    GenealogyPerson:
+      type: object
+      properties:
+        id:
+          type: string
+        nepaliName:
+          type: [string, "null"]
+        englishName:
+          type: string
+        role:
+          type: string
+        initials:
+          type: string
+        generation:
+          type: integer
+        branch:
+          type: string
+        deceased:
+          type: boolean
+        verificationStatus:
+          type: string
+      required: [id, englishName, role, initials, generation, branch, deceased, verificationStatus]
+    GenealogyRelationship:
+      type: object
+      properties:
+        id:
+          type: string
+        personAId:
+          type: string
+        personBId:
+          type: string
+        type:
+          type: string
+      required: [id, personAId, personBId, type]
+    GenealogyTree:
+      type: object
+      properties:
+        centerPersonId:
+          type: string
+        people:
+          type: array
+          items:
+            $ref: "#/components/schemas/GenealogyPerson"
+        relationships:
+          type: array
+          items:
+            $ref: "#/components/schemas/GenealogyRelationship"
+      required: [centerPersonId, people, relationships]
+    RelationshipResult:
+      type: object
+      properties:
+        connected:
+          type: boolean
+        relationship:
+          type: string
+        path:
+          type: array
+          items:
+            type: string
+        hops:
+          type: integer
+        message:
+          type: string
+      required: [connected, relationship, path, hops, message]
 
