@@ -28,7 +28,7 @@ export const getGenealogyTreeQueryGenerationsMax = 5;
 
 export const GetGenealogyTreeQueryParams = zod.object({
   "centerPersonId": zod.coerce.string().default(getGenealogyTreeQueryCenterPersonIdDefault),
-  "generations": zod.coerce.number().int().min(1).max(getGenealogyTreeQueryGenerationsMax).default(getGenealogyTreeQueryGenerationsDefault)
+  "generations": zod.coerce.number().min(1).max(getGenealogyTreeQueryGenerationsMax).default(getGenealogyTreeQueryGenerationsDefault)
 })
 
 export const GetGenealogyTreeResponse = zod.object({
@@ -39,7 +39,7 @@ export const GetGenealogyTreeResponse = zod.object({
   "englishName": zod.string(),
   "role": zod.string(),
   "initials": zod.string(),
-  "generation": zod.int(),
+  "generation": zod.number(),
   "branch": zod.string(),
   "deceased": zod.boolean(),
   "verificationStatus": zod.string()
@@ -69,7 +69,7 @@ export const SearchPeopleResponseItem = zod.object({
   "englishName": zod.string(),
   "role": zod.string(),
   "initials": zod.string(),
-  "generation": zod.int(),
+  "generation": zod.number(),
   "branch": zod.string(),
   "deceased": zod.boolean(),
   "verificationStatus": zod.string()
@@ -89,7 +89,7 @@ export const FindRelationshipResponse = zod.object({
   "connected": zod.boolean(),
   "relationship": zod.string(),
   "path": zod.array(zod.string()),
-  "hops": zod.int(),
+  "hops": zod.number(),
   "message": zod.string()
 })
 

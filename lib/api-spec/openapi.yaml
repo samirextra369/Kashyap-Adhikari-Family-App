@@ -42,7 +42,7 @@ paths:
           in: query
           required: false
           schema:
-            type: integer
+            type: number
             minimum: 1
             maximum: 5
             default: 3
@@ -120,7 +120,7 @@ components:
         initials:
           type: string
         generation:
-          type: integer
+          type: number
         branch:
           type: string
         deceased:
@@ -166,7 +166,7 @@ components:
           items:
             type: string
         hops:
-          type: integer
+          type: number
         message:
           type: string
       required: [connected, relationship, path, hops, message]

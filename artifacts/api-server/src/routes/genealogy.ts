@@ -9,7 +9,7 @@ import {
 } from "@workspace/db/schema";
 import {
   FindRelationshipResponse,
-  GenealogyTree,
+  GetGenealogyTreeResponse,
   SearchPeopleResponse,
 } from "@workspace/api-zod";
 
@@ -81,7 +81,7 @@ router.get("/v1/genealogy/tree", async (req, res, next) => {
     const nearby = allPeople.filter((person) => Math.abs(person.generation - center.generation) <= generationLimit);
     const nearbyIds = new Set(nearby.map((person) => person.id));
     const relationships = await db.select().from(personRelationships);
-    return res.json(GenealogyTree.parse({
+    return res.json(GetGenealogyTreeResponse.parse({
       centerPersonId: center.id,
       people: nearby.map((person) => mapPerson(person, branchMap.get(person.branchId ?? "") ?? "Unassigned branch")),
       relationships: relationships.filter((relationship) => nearbyIds.has(relationship.personAId) && nearbyIds.has(relationship.personBId)).map((relationship) => ({
@@ -92,7 +92,7 @@ router.get("/v1/genealogy/tree", async (req, res, next) => {
       })),
     }));
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 
@@ -107,7 +107,7 @@ router.get("/v1/people/search", async (req, res, next) => {
     }).from(people).leftJoin(familyBranches, eq(people.branchId, familyBranches.id)).where(or(ilike(people.englishName, `%${query}%`), ilike(people.role, `%${query}%`), ilike(familyBranches.name, `%${query}%`))).limit(25);
     return res.json(SearchPeopleResponse.parse(matches.map(({ person, branch }) => mapPerson(person, branch ?? "Unassigned branch"))));
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 
@@ -148,7 +148,7 @@ router.get("/v1/relationships/find", async (req, res, next) => {
     const relationship = hops === 0 ? "Self" : hops === 1 ? "Close family" : hops === 2 ? "Grandparent or sibling" : "Extended family";
     return res.json(FindRelationshipResponse.parse({ connected: true, relationship, path: pathNames, hops, message: "Calculated from verified direct relationships." }));
   } catch (error) {
-    next(error);
+    return next(error);
   }
 });
 
