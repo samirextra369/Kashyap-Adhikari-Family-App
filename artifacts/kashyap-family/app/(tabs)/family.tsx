@@ -1,0 +1,61 @@
+import { Feather, Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { useMemo, useState } from 'react';
+import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useColors } from '@/hooks/useColors';
+
+type Person = { id: string; name: string; role: string; initials: string; generation: number; branch: string };
+const people: Person[] = [
+  { id: 'hari', name: 'Hari Prasad Adhikari', role: 'Great-grandfather', initials: 'HP', generation: 1, branch: 'Pokhara' },
+  { id: 'maya', name: 'Maya Adhikari', role: 'Great-grandmother', initials: 'MA', generation: 1, branch: 'Pokhara' },
+  { id: 'ram', name: 'Ram Adhikari', role: 'Grandfather', initials: 'RA', generation: 2, branch: 'Pokhara' },
+  { id: 'sita', name: 'Sita Adhikari', role: 'Grandmother', initials: 'SA', generation: 2, branch: 'Pokhara' },
+  { id: 'suman', name: 'Suman Adhikari', role: 'You', initials: 'SU', generation: 3, branch: 'Pokhara' },
+  { id: 'aashish', name: 'Aashish Adhikari', role: 'Brother', initials: 'AA', generation: 3, branch: 'Kathmandu' },
+  { id: 'nirmala', name: 'Nirmala Adhikari', role: 'Aunt', initials: 'NA', generation: 3, branch: 'Pokhara' },
+];
+
+export default function FamilyScreen() {
+  const colors = useColors();
+  const insets = useSafeAreaInsets();
+  const router = useRouter();
+  const [query, setQuery] = useState('');
+  const [selected, setSelected] = useState('suman');
+  const filtered = useMemo(() => people.filter((person) => `${person.name} ${person.role} ${person.branch}`.toLowerCase().includes(query.toLowerCase())), [query]);
+  const focus = people.find((person) => person.id === selected) ?? people[4];
+
+  return (
+    <View style={[styles.page, { backgroundColor: colors.background }]}>
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingTop: insets.top + 14, paddingBottom: insets.bottom + 100 }}>
+        <View style={styles.header}><View><Text style={[styles.eyebrow, { color: colors.mutedForeground }]}>YOUR ROOTS</Text><Text style={[styles.title, { color: colors.foreground }]}>Family</Text></View><Pressable style={[styles.addButton, { backgroundColor: colors.primary }]} onPress={() => router.push('/')}><Feather name="plus" size={20} color={colors.primaryForeground} /></Pressable></View>
+        <View style={[styles.segment, { backgroundColor: colors.secondary }]}><Pressable style={[styles.segmentItem, { backgroundColor: colors.card }]}><Text style={[styles.segmentText, { color: colors.primary }]}>My tree</Text></Pressable><Pressable style={styles.segmentItem}><Text style={[styles.segmentText, { color: colors.mutedForeground }]}>Explore</Text></Pressable></View>
+        <View style={[styles.treePanel, { backgroundColor: colors.card, borderColor: colors.border }]}>
+          <View style={styles.treePanelHeader}><View><Text style={[styles.panelEyebrow, { color: colors.mutedForeground }]}>CENTERED ON</Text><Text style={[styles.panelName, { color: colors.foreground }]}>{focus.name}</Text></View><View style={[styles.generationPill, { backgroundColor: colors.accent }]}><Text style={[styles.generationText, { color: colors.accentForeground }]}>Gen {focus.generation}</Text></View></View>
+          <View style={styles.miniTree}>
+            <View style={[styles.branchLine, { backgroundColor: colors.border }]} />
+            <TreeNode label="Hari + Maya" sub="Great-grandparents" colors={colors} muted />
+            <View style={styles.downLine}><View style={[styles.downStem, { backgroundColor: colors.border }]} /><View style={[styles.downFork, { backgroundColor: colors.border }]} /></View>
+            <View style={styles.pairRow}><TreeNode label="Ram + Sita" sub="Grandparents" colors={colors} /><TreeNode label="Nirmala" sub="Aunt" colors={colors} muted /></View>
+            <View style={styles.downLine}><View style={[styles.downStem, { backgroundColor: colors.border }]} /></View>
+            <View style={[styles.youNode, { backgroundColor: colors.primary }]}><View style={styles.youDot}><Text style={styles.youInitials}>SU</Text></View><View><Text style={styles.youName}>Suman Adhikari</Text><Text style={styles.youRole}>You · Pokhara branch</Text></View><Feather name="check-circle" size={18} color="#D4E4D8" /></View>
+          </View>
+          <Pressable style={[styles.openTree, { borderColor: colors.primary }]} onPress={() => setSelected(focus.id)}><Feather name="maximize-2" size={15} color={colors.primary} /><Text style={[styles.openTreeText, { color: colors.primary }]}>Open full tree</Text></Pressable>
+        </View>
+
+        <View style={styles.sectionHeading}><Text style={[styles.sectionTitle, { color: colors.foreground }]}>Find a relative</Text><Text style={[styles.count, { color: colors.mutedForeground }]}>{filtered.length} records</Text></View>
+        <View style={[styles.search, { backgroundColor: colors.card, borderColor: colors.border }]}><Feather name="search" size={18} color={colors.mutedForeground} /><TextInput value={query} onChangeText={setQuery} placeholder="Search by name or branch" placeholderTextColor={colors.mutedForeground} style={[styles.input, { color: colors.foreground }]} /></View>
+        <View style={styles.personList}>{filtered.map((person) => <Pressable key={person.id} onPress={() => setSelected(person.id)} style={[styles.person, { backgroundColor: colors.card, borderColor: selected === person.id ? colors.primary : colors.border }]}><View style={[styles.avatar, { backgroundColor: person.id === 'suman' ? colors.primary : colors.secondary }]}><Text style={[styles.initials, { color: person.id === 'suman' ? colors.primaryForeground : colors.primary }]}>{person.initials}</Text></View><View style={styles.personCopy}><Text style={[styles.personName, { color: colors.foreground }]}>{person.name}</Text><Text style={[styles.personRole, { color: colors.mutedForeground }]}>{person.role} · {person.branch}</Text></View>{person.id !== 'suman' ? <Feather name="chevron-right" size={18} color={colors.mutedForeground} /> : <Ionicons name="radio-button-on" size={18} color={colors.primary} />}</Pressable>)}</View>
+        <Pressable style={[styles.relationshipButton, { backgroundColor: colors.accent }]} onPress={() => router.push('/')}><Feather name="git-merge" size={18} color={colors.accentForeground} /><View><Text style={[styles.relationshipTitle, { color: colors.accentForeground }]}>Relationship finder</Text><Text style={[styles.relationshipDetail, { color: colors.accentForeground }]}>See how you’re connected to any relative</Text></View><Feather name="arrow-up-right" size={17} color={colors.accentForeground} /></Pressable>
+      </ScrollView>
+    </View>
+  );
+}
+
+function TreeNode({ label, sub, colors, muted = false }: { label: string; sub: string; colors: ReturnType<typeof useColors>; muted?: boolean }) {
+  return <View style={[styles.treeNode, { backgroundColor: muted ? colors.secondary : colors.card, borderColor: colors.border }]}><Text style={[styles.treeNodeLabel, { color: colors.foreground }]}>{label}</Text><Text style={[styles.treeNodeSub, { color: colors.mutedForeground }]}>{sub}</Text></View>;
+}
+
+const styles = StyleSheet.create({
+  page: { flex: 1 }, header: { paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 22 }, eyebrow: { fontSize: 11, letterSpacing: 1.7, fontWeight: '700', marginBottom: 6 }, title: { fontSize: 30, fontWeight: '700', letterSpacing: -0.6 }, addButton: { width: 42, height: 42, borderRadius: 21, justifyContent: 'center', alignItems: 'center' }, segment: { marginHorizontal: 20, padding: 4, borderRadius: 14, flexDirection: 'row', marginBottom: 20 }, segmentItem: { flex: 1, alignItems: 'center', paddingVertical: 10, borderRadius: 11 }, segmentText: { fontSize: 13, fontWeight: '700' }, treePanel: { marginHorizontal: 20, borderRadius: 21, borderWidth: 1, padding: 16, marginBottom: 27 }, treePanelHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' }, panelEyebrow: { fontSize: 10, letterSpacing: 1.4, fontWeight: '700' }, panelName: { fontSize: 17, fontWeight: '700', marginTop: 4 }, generationPill: { borderRadius: 20, paddingHorizontal: 10, paddingVertical: 6 }, generationText: { fontSize: 11, fontWeight: '700' }, miniTree: { alignItems: 'center', paddingTop: 18 }, branchLine: { position: 'absolute', width: 1, height: 18, top: 0 }, treeNode: { borderWidth: 1, borderRadius: 12, paddingVertical: 8, paddingHorizontal: 12, alignItems: 'center', minWidth: 128 }, treeNodeLabel: { fontSize: 11, fontWeight: '700' }, treeNodeSub: { fontSize: 9, marginTop: 2 }, downLine: { height: 19, alignItems: 'center' }, downStem: { width: 1, height: 19 }, downFork: { position: 'absolute', width: 142, height: 1, top: 0 }, pairRow: { flexDirection: 'row', gap: 13 }, youNode: { borderRadius: 13, padding: 10, flexDirection: 'row', alignItems: 'center', gap: 9, width: '100%' }, youDot: { width: 31, height: 31, borderRadius: 16, backgroundColor: '#417A61', justifyContent: 'center', alignItems: 'center' }, youInitials: { color: '#F7F3EC', fontSize: 10, fontWeight: '700' }, youName: { color: '#FFF9EF', fontSize: 12, fontWeight: '700' }, youRole: { color: '#D4E4D8', fontSize: 9, marginTop: 2 }, openTree: { marginTop: 16, borderWidth: 1, borderRadius: 13, paddingVertical: 10, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', gap: 7 }, openTreeText: { fontSize: 12, fontWeight: '700' }, sectionHeading: { paddingHorizontal: 20, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }, sectionTitle: { fontSize: 18, fontWeight: '700' }, count: { fontSize: 11 }, search: { marginHorizontal: 20, borderWidth: 1, borderRadius: 14, height: 46, flexDirection: 'row', alignItems: 'center', paddingHorizontal: 13, gap: 9, marginBottom: 12 }, input: { flex: 1, fontSize: 13 }, personList: { gap: 8, paddingHorizontal: 20 }, person: { borderWidth: 1, borderRadius: 15, padding: 11, flexDirection: 'row', alignItems: 'center', gap: 11 }, avatar: { width: 40, height: 40, borderRadius: 14, alignItems: 'center', justifyContent: 'center' }, initials: { fontSize: 12, fontWeight: '700' }, personCopy: { flex: 1 }, personName: { fontSize: 13, fontWeight: '700' }, personRole: { fontSize: 11, marginTop: 4 }, relationshipButton: { marginHorizontal: 20, marginTop: 22, marginBottom: 8, borderRadius: 16, padding: 14, flexDirection: 'row', alignItems: 'center', gap: 11 }, relationshipTitle: { fontSize: 13, fontWeight: '700' }, relationshipDetail: { fontSize: 10, marginTop: 3 },
+});

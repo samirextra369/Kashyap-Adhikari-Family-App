@@ -1,0 +1,24 @@
+kind = "mobile"
+previewPath = "/kashyap-family/"
+title = "Kashyap Family"
+description = "A warm, respectful family genealogy app for Kashyap Adhikari community members in Nepal to explore family connections, preserve history, and stay connected."
+version = "1.0.0"
+id = "artifacts/kashyap-family"
+router = "expo-domain"
+
+[[services]]
+name = "expo"
+ensurePreviewReachable = "/status"
+paths = [ "/kashyap-family/" ]
+localPort = 19129
+
+[services.development]
+run = "pnpm --filter @workspace/kashyap-family run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/kashyap-family", "run", "build" ]
+run = [ "pnpm", "--filter", "@workspace/kashyap-family", "run", "serve" ]
+
+[services.env]
+PORT = "19129"
+BASE_PATH = "/kashyap-family/"

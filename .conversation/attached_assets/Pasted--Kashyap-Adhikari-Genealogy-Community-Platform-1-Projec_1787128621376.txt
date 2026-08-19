@@ -1,0 +1,2788 @@
+# Kashyap Adhikari Genealogy & Community Platform
+
+## 1. Project Overview
+
+Build a production-ready cross-platform mobile application and web-based administration portal for the **Kashyap/Kashyapa Gotra Adhikari community of Nepal**.
+
+The platform will combine:
+
+* Digital genealogy
+* Family tree management
+* Automatic relationship identification
+* Cultural and religious knowledge
+* Community networking
+* Family events
+* Invitations
+* Notifications and reminders
+* Birth, marriage and death records
+* Mourning/Jutho calculation
+* Community announcements
+* Private messaging
+* Historical archive
+
+The mobile application must work on:
+
+* Android
+* iOS
+
+A separate responsive web application must be provided for administrators.
+
+The platform must be designed for long-term preservation of genealogy data. Genealogy records must therefore be treated as historical records and must not be silently overwritten or permanently deleted.
+
+---
+
+# 2. Primary Objectives
+
+The system shall:
+
+1. Digitally preserve the genealogy of Kashyap Gotra Adhikari families throughout Nepal.
+2. Allow community members to discover their ancestors and descendants.
+3. Automatically determine relationships between two people.
+4. Allow community members to contribute genealogy information.
+5. Require approval before community-submitted genealogy changes become official.
+6. Preserve information about Kashyap Rishi, Bindabasini Devi, Adhikari history and traditional rituals.
+7. Provide family-event reminders and notifications.
+8. Allow families to send digital invitations.
+9. Support mourning/Jutho calculation based on configurable genealogy rules.
+10. Provide community announcements and social interaction.
+11. Preserve privacy and require consent for sensitive information.
+12. Maintain complete history and audit logs of important changes.
+
+---
+
+# 3. Platform Components
+
+Create three major components.
+
+## 3.1 Mobile Application
+
+Cross-platform application for Android and iOS.
+
+Primary users:
+
+* Community members
+* Family representatives
+* Moderators
+* Genealogy admins where appropriate
+
+---
+
+## 3.2 Web Admin Portal
+
+Responsive browser-based administration portal.
+
+The admin portal must support:
+
+* User management
+* Family-tree management
+* Genealogy approval
+* Duplicate resolution
+* Content management
+* Community moderation
+* Event management
+* Notification management
+* Jutho rule configuration
+* Audit logs
+* Reports
+* System configuration
+
+---
+
+## 3.3 Backend/API
+
+Create a centralized backend responsible for:
+
+* Authentication
+* Authorization
+* Member profiles
+* Genealogy graph
+* Relationship calculation
+* Approval workflows
+* Notifications
+* Events
+* Posts
+* Chat
+* Cultural content
+* Audit logging
+* Search
+* Media/document handling
+
+Do not place critical genealogy logic only inside the mobile client.
+
+---
+
+# 4. Recommended Architecture
+
+Use a maintainable architecture.
+
+Preferred structure:
+
+```text
+Mobile App
+   |
+   | API
+   v
+Backend
+   |
+   +---- Authentication
+   +---- Genealogy Service
+   +---- Relationship Engine
+   +---- Approval Workflow
+   +---- Notification Service
+   +---- Community Service
+   +---- Event Service
+   +---- Cultural Content Service
+   +---- Jutho Rule Engine
+   +---- Search Service
+   |
+Database
+   |
+Media/Object Storage
+```
+
+Admin portal must use the same centralized backend.
+
+---
+
+# 5. Important Architectural Rule
+
+The family tree must NOT be implemented as simple nested JSON stored inside a user profile.
+
+Genealogy must be represented using individual person records and relationships between people.
+
+At minimum, persist direct relationships such as:
+
+* Parent → Child
+* Spouse ↔ Spouse
+
+Relationships such as:
+
+* Grandfather
+* Uncle
+* Aunt
+* Cousin
+* Nephew
+* Niece
+* Grandchild
+
+should normally be calculated from direct relationships.
+
+The genealogy system must support people who do not have user accounts.
+
+A genealogy person and an application user must therefore be separate concepts.
+
+Example:
+
+```text
+User Account
+      |
+optional link
+      |
+Person Record
+```
+
+A deceased ancestor may exist as a Person record without having any User Account.
+
+---
+
+# 6. User Roles
+
+## 6.1 Member
+
+Normal registered community member.
+
+Permissions:
+
+* Manage own profile
+* View permitted family information
+* View family tree
+* Search members
+* View relationship with other members
+* Submit genealogy changes
+* Report births
+* Report marriages
+* Report deaths
+* Follow people/families
+* Receive notifications
+* Create eligible community posts
+* Send invitations
+* RSVP to events
+* Chat with eligible users
+* Report inappropriate content
+
+---
+
+## 6.2 Family Representative
+
+A trusted representative responsible for one or more branches.
+
+Additional permissions:
+
+* Review submitted information for assigned branch
+* Flag inaccurate genealogy
+* Recommend approval/rejection
+* Help resolve duplicates
+* Verify family relationships
+
+Final approval authority should still be configurable.
+
+---
+
+## 6.3 Content Moderator
+
+Permissions:
+
+* Review reported posts
+* Hide/remove community content
+* Suspend inappropriate posts
+* Review reports
+* Manage categories
+* Escalate accounts to Super Admin
+
+Content Moderator must not automatically receive genealogy administration privileges.
+
+---
+
+## 6.4 Genealogy Admin
+
+Permissions:
+
+* Approve genealogy updates
+* Reject genealogy updates
+* Modify verified genealogy
+* Merge duplicate persons
+* Correct relationships
+* Review supporting evidence
+* Manage birth records
+* Manage marriage records
+* Manage death records
+* Resolve conflicting requests
+* View genealogy audit history
+
+---
+
+## 6.5 Super Admin
+
+Full system permissions.
+
+Includes:
+
+* User administration
+* Role management
+* Permissions
+* Content management
+* Genealogy administration
+* Jutho rules
+* Notification broadcasts
+* Community moderation
+* System configuration
+* Audit logs
+* Reports
+
+---
+
+# 7. Authentication
+
+Support secure authentication.
+
+Initial options:
+
+* Mobile number + OTP
+* Email + password or email OTP
+
+Allow social login later if required.
+
+Required functionality:
+
+* Sign up
+* Login
+* Logout
+* Forgot password if passwords are used
+* OTP verification
+* Device/session management
+* Account deactivation
+
+Admin accounts should support stronger authentication.
+
+Prefer optional or mandatory MFA for administrator roles.
+
+---
+
+# 8. Account Registration Workflow
+
+Registration workflow:
+
+```text
+Install App
+   ↓
+Register
+   ↓
+Verify Phone/Email
+   ↓
+Create Basic Profile
+   ↓
+Search Existing Genealogy Person
+   ↓
+Link Account to Existing Person
+OR
+Request New Person Record
+   ↓
+Verification if required
+   ↓
+Account Activated
+```
+
+Do not automatically create a duplicate genealogy record every time somebody creates an account.
+
+Before creating a new person record, search for possible matches.
+
+---
+
+# 9. User Profile
+
+Each member profile may contain:
+
+## Identity
+
+* Unique profile ID
+* Nepali full name
+* English full name
+* Gender
+* Profile photograph
+* Date of birth
+* Birthplace
+* Living/deceased status
+
+## Genealogy
+
+* Father
+* Mother
+* Spouses
+* Children
+* Family branch
+* Ancestral/original village
+* Generation number if available
+
+## Personal Information
+
+* Permanent address
+* Current location
+* District
+* Province
+* Country
+* Mobile number
+* Email
+
+## Professional Information
+
+* Occupation
+* Designation
+* Organization
+* Education
+* Professional achievements
+* Notable work
+
+## Biography
+
+* Short biography
+* Significant contribution
+* Publications
+* Awards
+* Community contribution
+
+---
+
+# 10. Profile Privacy
+
+Privacy must be supported per field or field group.
+
+Possible visibility levels:
+
+* Everyone
+* Registered Community Members
+* Family Only
+* Selected People
+* Only Me
+
+Sensitive information should default to restricted visibility.
+
+Examples:
+
+* Phone number
+* Email
+* Home address
+* Workplace
+* Personal documents
+
+Admins may view information only when required for legitimate administrative purposes.
+
+---
+
+# 11. Consent
+
+A user's personal information must not be publicly displayed merely because a relative entered it.
+
+For living persons:
+
+* Sensitive profile information requires consent.
+* Users should be able to claim their genealogy person record.
+* Claimed profiles should give the person control over eligible profile fields.
+
+Genealogy relationships themselves may remain governed by genealogy administration policies.
+
+---
+
+# 12. Family Tree
+
+Create an interactive genealogy tree.
+
+Users must be able to:
+
+* View ancestors
+* View descendants
+* View siblings
+* View spouses
+* View children
+* Navigate between branches
+* Zoom
+* Pan
+* Expand branches
+* Collapse branches
+* Search within tree
+* Open person profiles
+* Center tree on selected person
+
+Support large family trees.
+
+Do not load thousands of nodes at once.
+
+Load nearby generations progressively.
+
+---
+
+# 13. Family Tree Views
+
+Provide at least:
+
+## My Tree
+
+Centers the genealogy around the logged-in member.
+
+## Ancestors
+
+Displays preceding generations.
+
+## Descendants
+
+Displays descendants of selected ancestor.
+
+## Branch Tree
+
+Displays a selected family branch.
+
+## Person-Centered Tree
+
+User selects any permitted person and views the family tree centered around that person.
+
+---
+
+# 14. Genealogy Person Entity
+
+Each genealogy person should have a unique immutable ID.
+
+Suggested fields:
+
+```text
+Person
+- id
+- nepaliName
+- englishName
+- gender
+- dateOfBirthBS
+- dateOfBirthAD
+- birthDatePrecision
+- birthPlace
+- deceased
+- deathDateBS
+- deathDateAD
+- ancestralLocation
+- branchId
+- biography
+- verificationStatus
+- linkedUserId
+- createdAt
+- updatedAt
+```
+
+Historical people may have uncertain dates.
+
+Support values such as:
+
+* Exact date
+* Approximate year
+* Unknown
+
+Do not require exact dates for historical ancestors.
+
+---
+
+# 15. Relationship Entity
+
+Store direct relationships.
+
+Example:
+
+```text
+PersonRelationship
+- id
+- personAId
+- personBId
+- type
+- status
+- validFrom
+- validTo
+- source
+- verifiedBy
+- createdAt
+```
+
+Relationship types initially:
+
+* PARENT_CHILD
+* SPOUSE
+
+Optionally support:
+
+* ADOPTIVE_PARENT_CHILD
+* GUARDIAN
+
+The model must support multiple marriages.
+
+---
+
+# 16. Automatic Relationship Engine
+
+Create a relationship engine that calculates the relationship between any two connected people.
+
+Example:
+
+```text
+Current User
+   ↓ Father
+Father
+   ↓ Brother
+Uncle
+   ↓ Daughter
+Person B
+```
+
+The system should return:
+
+```text
+Relationship Path:
+Father → Father's Brother → Daughter
+
+Relationship:
+Cousin
+```
+
+Where possible, display a culturally appropriate Nepali relationship term.
+
+The relationship engine must return:
+
+* Relationship name
+* Relationship path
+* Number of genealogy hops
+* Maternal/paternal indication where applicable
+
+---
+
+# 17. Relationship Search Constraints
+
+Prevent infinite traversal.
+
+Define maximum traversal depth.
+
+Recommended initial maximum:
+
+10-15 genealogy hops.
+
+If no known path exists:
+
+Display:
+
+> No verified genealogy relationship could be determined from the available family records.
+
+Never invent a relationship.
+
+---
+
+# 18. Relationship Caching
+
+Because relationship traversal may be computationally expensive:
+
+* Cache frequently calculated relationships.
+* Invalidate cache when relevant genealogy relationships change.
+
+Do not store every possible pair permanently.
+
+---
+
+# 19. Family Branches
+
+Support genealogy hierarchy.
+
+Example:
+
+```text
+Kashyap Gotra
+     ↓
+Adhikari Community
+     ↓
+Major Lineage
+     ↓
+Branch
+     ↓
+Sub-branch
+     ↓
+Family
+     ↓
+Person
+```
+
+Admin should be able to create and manage branch structure.
+
+Branch records may include:
+
+* Name
+* Nepali name
+* Description
+* Ancestral location
+* Parent branch
+* Founding ancestor
+* Historical notes
+
+---
+
+# 20. Genealogy Update Requests
+
+Community members should be able to propose genealogy changes.
+
+Supported request types:
+
+* Add person
+* Correct person's name
+* Correct date of birth
+* Correct birthplace
+* Add father
+* Add mother
+* Add spouse
+* Add child
+* Record marriage
+* Record divorce/separation if applicable
+* Record death
+* Correct relationship
+* Move person to correct branch
+* Add historical information
+
+---
+
+# 21. Genealogy Approval Workflow
+
+Submitted changes must not immediately update verified genealogy.
+
+Workflow:
+
+```text
+Member submits request
+        ↓
+PENDING
+        ↓
+Optional Family Representative Review
+        ↓
+Genealogy Admin Review
+        ↓
+APPROVED / REJECTED / NEEDS_INFORMATION
+        ↓
+If Approved
+Apply Change
+        ↓
+Create Audit Record
+```
+
+Statuses:
+
+* DRAFT
+* SUBMITTED
+* UNDER_REVIEW
+* NEEDS_INFORMATION
+* APPROVED
+* REJECTED
+* CANCELLED
+
+---
+
+# 22. Change Comparison
+
+Admin portal must show:
+
+* Current value
+* Proposed value
+* Requester
+* Submission date
+* Reason
+* Supporting evidence
+* Related people affected
+
+Example:
+
+```text
+Field: Date of Birth
+
+Current:
+2055/05/10
+
+Requested:
+2055/05/11
+```
+
+---
+
+# 23. Evidence Upload
+
+Genealogy changes may contain supporting evidence.
+
+Examples:
+
+* Birth certificate
+* Citizenship document
+* Marriage certificate/card
+* Death certificate
+* Existing genealogy book
+* Historical record
+* Family document
+* Photograph
+* Other supporting document
+
+Documents must be private.
+
+Only authorized roles may access them.
+
+Store documents securely.
+
+Do not expose raw private storage URLs publicly.
+
+---
+
+# 24. Duplicate Detection
+
+Before creating a Person record, search for potential duplicates.
+
+Check combinations of:
+
+* Name
+* Nepali name
+* Father's name
+* Mother's name
+* Grandfather's name
+* Date of birth
+* Birth year
+* Birthplace
+* Branch
+* Ancestral village
+
+Return:
+
+* Possible match score
+* Candidate profiles
+
+Example:
+
+> Possible matching genealogy records found.
+
+Allow user to select existing person instead.
+
+---
+
+# 25. Duplicate Resolution
+
+Genealogy Admin should be able to merge duplicate people.
+
+Merge workflow must:
+
+1. Select primary record.
+2. Review conflicting fields.
+3. Review relationships.
+4. Review linked account.
+5. Merge selected data.
+6. Re-point relationships.
+7. Preserve duplicate record as merged/tombstoned history.
+8. Create audit log.
+
+Never permanently erase genealogy history silently.
+
+---
+
+# 26. Birth Registration
+
+Members may submit newborn children.
+
+Fields:
+
+* Name
+* Gender
+* Date of birth
+* Birthplace
+* Father
+* Mother
+* Supporting document if required
+
+Workflow:
+
+```text
+Birth submitted
+      ↓
+Genealogy review
+      ↓
+Approved
+      ↓
+Child added
+      ↓
+Parent-child relationships created
+```
+
+---
+
+# 27. Marriage Registration
+
+Members may submit marriages.
+
+Fields:
+
+* Person A
+* Person B
+* Marriage date
+* Marriage location
+* Notes
+* Evidence
+
+If both persons have accounts:
+
+Optionally request confirmation from both parties.
+
+Approval creates spouse relationship.
+
+Support multiple marriages historically.
+
+---
+
+# 28. Death Registration
+
+Members may report a person's death.
+
+Fields:
+
+* Person
+* Death date
+* Death location
+* Notes
+* Evidence
+* Reporter relationship
+
+Workflow:
+
+```text
+Death reported
+      ↓
+Pending verification
+      ↓
+Admin approval
+      ↓
+Person marked deceased
+      ↓
+Generate family notifications
+      ↓
+Trigger Jutho calculation
+      ↓
+Schedule eligible reminders
+```
+
+---
+
+# 29. Deceased Profiles
+
+Do not delete deceased persons.
+
+Profile should show:
+
+* Deceased status
+* Birth date
+* Death date
+* Biography
+* Family relationships
+* Genealogy tree
+
+Sensitive contact details should no longer be relevant/public.
+
+Optionally support memorial information in future.
+
+---
+
+# 30. Jutho / Mourning Period Engine
+
+Implement a configurable rule engine for calculating mourning/Jutho duration.
+
+Possible results:
+
+* 13 days
+* 5 days
+* 3 days
+* 1 day
+* No mourning period
+
+Suggested display:
+
+* 13 days → Red
+* 5 days → Yellow
+* 3 days → Sky Blue
+* 1 day → Green
+* Not applicable → White
+
+Do not hard-code religious rules directly into application logic.
+
+---
+
+# 31. Configurable Jutho Rules
+
+Create admin-managed rules.
+
+Possible fields:
+
+```text
+JuthoRule
+- id
+- relationshipPattern
+- minimumGenerationDistance
+- maximumGenerationDistance
+- maternalOrPaternal
+- branchId optional
+- mourningDays
+- displayColor
+- description
+- active
+- priority
+```
+
+Rules may vary between family traditions.
+
+Support branch-specific overrides.
+
+---
+
+# 32. Jutho Calculation Output
+
+When a verified death occurs, the user should be able to see:
+
+```text
+Deceased:
+Ram Prasad Adhikari
+
+Relationship:
+Grandfather's brother
+
+Mourning/Jutho period:
+5 days
+
+Start date:
+2083/05/02
+
+End date:
+2083/05/07
+```
+
+Also show:
+
+> This result is based on the currently configured community tradition rules.
+
+Admin should be able to update rule definitions without application code changes.
+
+---
+
+# 33. Jutho Disclaimer
+
+Because religious customs may vary:
+
+Display an informational disclaimer such as:
+
+> Ritual practices may vary by family tradition. Please consult your family elders or religious authority where necessary.
+
+---
+
+# 34. Follow / Interest System
+
+Allow members to follow:
+
+* Person
+* Family
+* Branch
+* Ancestor lineage
+
+Following should not imply access to private information.
+
+Users can manage followed entities.
+
+---
+
+# 35. Notifications
+
+Support:
+
+* Push notification
+* In-app notification
+
+Optional future channels:
+
+* Email
+* SMS
+
+Notification categories:
+
+* Birthday
+* Birth
+* Marriage
+* Death
+* Shraddha
+* 84 Puja
+* Family update
+* Invitation
+* Community post
+* Admin announcement
+* Chat message
+* Genealogy request status
+
+---
+
+# 36. Notification Preferences
+
+Users should independently enable/disable notification categories.
+
+Example:
+
+```text
+Birthdays: ON
+Deaths: ON
+Shraddha: ON
+Community Posts: OFF
+Invitations: ON
+Messages: ON
+Admin Announcements: ON
+```
+
+Critical administrative announcements may optionally override category preferences where legally and operationally appropriate.
+
+---
+
+# 37. Birthday Reminder
+
+If date of birth is available and permitted:
+
+Notify users following that person/family.
+
+Example:
+
+> Tomorrow is Suresh Adhikari's birthday.
+
+Allow configurable timing:
+
+* Same day
+* 1 day before
+* Custom future enhancement
+
+---
+
+# 38. Shraddha Reminder
+
+Allow admin/family records to store relevant Shraddha information.
+
+Because traditional dates may not always follow a simple Gregorian anniversary, the system must not assume all Shraddha dates equal the death-date anniversary.
+
+Support manual/configurable religious-date records.
+
+---
+
+# 39. Nepali Calendar
+
+Support both:
+
+* Bikram Sambat
+* Gregorian Calendar
+
+Important use cases:
+
+* Birth date
+* Death date
+* Marriage
+* Shraddha
+* Puja
+* Invitations
+* Family events
+
+Where possible store normalized AD date plus original BS representation.
+
+Users should be able to view dates in their preferred calendar style.
+
+---
+
+# 40. Cultural Knowledge Center
+
+Create an admin-managed content module.
+
+Main categories:
+
+* Kashyap Rishi
+* Bindabasini Devi
+* Adhikari History
+* Puja and Rituals
+* Historical Documents
+* Articles
+
+---
+
+# 41. Kashyap Rishi Section
+
+Support:
+
+* Introduction
+* History
+* Religious significance
+* Mythological information
+* Text references
+* Images
+* Video links
+* Documents
+* Related articles
+
+---
+
+# 42. Bindabasini Devi Section
+
+Support:
+
+* Introduction
+* Historical information
+* Religious significance
+* Community connection
+* Worship information
+* Important dates
+* Images
+* Video
+* Articles
+
+---
+
+# 43. Puja and Ritual Section
+
+Support categories such as:
+
+* Goth Puja
+* Dewali
+* Kul Puja
+* Shraddha
+* Marriage rituals
+* Bratabandha
+* 84 Puja
+* Death rituals
+* Other customs
+
+Each content item may include:
+
+* Title
+* Description
+* Purpose
+* Required materials
+* Steps
+* Mantra/text
+* Images
+* Video
+* References
+* Attachments
+
+---
+
+# 44. Adhikari History
+
+Create structured content for:
+
+* Origin
+* Kashyap Gotra connection
+* Historic locations
+* Migration
+* Family branches
+* Important personalities
+* Historical records
+* Old photos
+* Documents
+* Existing genealogical references
+
+---
+
+# 45. Community Feed
+
+Create a community-post system.
+
+Post categories:
+
+* General announcement
+* Missing person
+* Death announcement
+* Marriage
+* Bratabandha
+* Puja
+* Help request
+* Blood donation
+* Property for sale
+* Land for sale
+* Room available
+* Job opportunity
+* Lost and found
+* Community event
+* Other
+
+---
+
+# 46. Community Post Fields
+
+Each post may include:
+
+* Title
+* Description
+* Category
+* Images
+* Optional contact
+* Optional location
+* Author
+* Created date
+* Expiration date
+* Visibility
+
+---
+
+# 47. Post Visibility
+
+Support:
+
+* Entire Community
+* Family Branch
+* Family
+* Selected Members
+* District
+* Private invitation-like audience
+
+Posts must respect permissions.
+
+---
+
+# 48. Community Broadcast Protection
+
+Do NOT allow every member to send push notifications to all installed devices.
+
+Normal flow:
+
+```text
+User creates post
+      ↓
+Post appears in permitted feed
+```
+
+For broadcast notifications:
+
+```text
+User requests broadcast
+      ↓
+Moderator/Admin approval
+      ↓
+Push notification sent
+```
+
+This prevents spam and abuse.
+
+---
+
+# 49. Content Moderation
+
+Members should be able to:
+
+* Report post
+* Report member
+* Block member
+
+Moderators should see:
+
+* Report reason
+* Reporter
+* Content
+* Previous reports
+* Decision history
+
+Moderation actions:
+
+* No action
+* Hide content
+* Remove content
+* Warn user
+* Temporarily suspend user
+* Escalate
+
+---
+
+# 50. Event Management
+
+Members should be able to create family/community events.
+
+Examples:
+
+* Marriage
+* Bratabandha
+* 84 Puja
+* Dewali
+* Family gathering
+* Religious ceremony
+* Community meeting
+* Memorial event
+
+---
+
+# 51. Event Fields
+
+Include:
+
+* Event name
+* Event type
+* Host
+* Description
+* Date
+* Start time
+* End time
+* Venue
+* Location coordinates
+* Map link/location
+* Invitation image/card
+* Contact
+* Invitee audience
+* RSVP enabled
+* Visibility
+
+---
+
+# 52. Invitation System
+
+Users should select invitees using:
+
+* Individual people
+* Family
+* Branch
+* Descendants of a selected person
+* Selected relatives
+* Custom selection
+
+System may use genealogy to assist recipient selection.
+
+Example:
+
+> Invite descendants of Person X.
+
+Do not automatically expose private family information during recipient selection.
+
+---
+
+# 53. Digital Invitation Card
+
+Allow organizer to:
+
+* Upload invitation image
+* Add invitation description
+* Add map location
+* Add event details
+
+Future enhancement:
+
+Generate digital cards using templates.
+
+Do not require automated invitation design for MVP.
+
+---
+
+# 54. RSVP
+
+Invitee responses:
+
+* ATTENDING
+* NOT_ATTENDING
+* MAYBE
+* PENDING
+
+Organizer dashboard:
+
+```text
+Invited: 250
+Attending: 170
+Not attending: 25
+Maybe: 15
+Pending: 40
+```
+
+Allow organizer to view invitee list subject to permissions.
+
+---
+
+# 55. Map / Location
+
+For events:
+
+Allow:
+
+* Map coordinates
+* Human-readable address
+* Open location in native map application
+
+Do not require continuous user location tracking.
+
+---
+
+# 56. Private Chat
+
+Create basic one-to-one chat.
+
+Features:
+
+* Text messages
+* Image sharing
+* Message timestamp
+* Seen status
+* Unread count
+* Block
+* Report
+
+Future:
+
+* Family group chats
+* Branch groups
+* Attachments
+* Voice messages
+
+Do not prioritize advanced chat features for initial MVP.
+
+---
+
+# 57. Search
+
+Global search should support:
+
+* Name
+* Nepali name
+* Father's name
+* Mother's name
+* Grandfather
+* Branch
+* Ancestral village
+* District
+* Profession
+* Person ID
+
+---
+
+# 58. Genealogy Search
+
+Allow genealogy-oriented queries such as:
+
+* Descendants of Person X
+* Ancestors of Person X
+* Members of Branch Y
+* Family from Location Z
+
+Do not require natural-language AI search initially.
+
+Structured filters are sufficient.
+
+---
+
+# 59. Search Privacy
+
+Search results must respect visibility rules.
+
+A search result may show only:
+
+* Name
+* Profile photo if allowed
+* Branch
+* Basic genealogy context
+
+Do not expose restricted phone/address information.
+
+---
+
+# 60. Home Screen
+
+Recommended home structure:
+
+## Header
+
+* Greeting
+* Search
+* Notification icon
+
+## Sections
+
+* Important announcements
+* Upcoming family events
+* Birthdays
+* Recent family updates
+* Community feed
+* Cultural content highlights
+
+---
+
+# 61. Bottom Navigation
+
+Recommended mobile navigation:
+
+```text
+Home
+Family
+Add
+Notifications
+Profile
+```
+
+The Add button may open actions:
+
+* Add family member
+* Report birth
+* Report marriage
+* Report death
+* Submit correction
+* Create post
+* Create event
+
+---
+
+# 62. Family Screen
+
+Sections:
+
+* My Family Tree
+* Explore Tree
+* Relationship Finder
+* Followed Families
+* Branches
+* Search People
+
+---
+
+# 63. Relationship Finder UI
+
+Allow:
+
+```text
+Person A:
+[Current User]
+
+Person B:
+[Select Person]
+
+[Find Relationship]
+```
+
+Result:
+
+```text
+Relationship:
+Cousin
+
+Path:
+You → Father → Brother → Daughter
+```
+
+Include Nepali relationship label when configured.
+
+---
+
+# 64. Admin Portal Navigation
+
+Create modules:
+
+```text
+Dashboard
+Users
+People
+Family Tree
+Branches
+Genealogy Requests
+Birth Requests
+Marriage Requests
+Death Requests
+Duplicate Records
+Community Posts
+Reports/Moderation
+Events
+Cultural Content
+Notifications
+Jutho Rules
+Audit Logs
+System Settings
+```
+
+---
+
+# 65. Admin Dashboard
+
+Show metrics:
+
+* Total registered users
+* Total genealogy people
+* Living persons
+* Deceased persons
+* Pending genealogy requests
+* Pending birth requests
+* Pending marriage requests
+* Pending death requests
+* Possible duplicates
+* Community posts
+* Reported posts
+* Upcoming events
+
+---
+
+# 66. Audit Logs
+
+Important actions must create immutable audit logs.
+
+Log:
+
+* Actor
+* Action
+* Entity
+* Previous data when applicable
+* New data
+* Timestamp
+* Source
+* Admin reason where applicable
+
+Examples:
+
+* Relationship changed
+* DOB changed
+* Person merged
+* Death approved
+* Post removed
+* Role changed
+
+---
+
+# 67. Genealogy Version History
+
+Maintain historical versions.
+
+Admin should be able to inspect:
+
+```text
+Version 1
+Created by ...
+Date ...
+
+Version 2
+DOB updated
+Requested by ...
+Approved by ...
+```
+
+Avoid destructive overwrites.
+
+---
+
+# 68. Data Deletion
+
+Normal user-generated content may support deletion according to platform rules.
+
+Genealogy data is different.
+
+If a genealogy record must be removed:
+
+* Prefer archive/tombstone.
+* Preserve audit history.
+* Preserve merge history.
+* Do not break other relationships.
+
+---
+
+# 69. Security Requirements
+
+Implement:
+
+* Secure authentication
+* Role-based authorization
+* Server-side permission checks
+* Secure document storage
+* Signed/temporary document URLs
+* Input validation
+* Rate limiting
+* API request validation
+* Protection against unauthorized relationship changes
+* Secure admin endpoints
+* Session revocation
+* Audit logs
+
+Never rely only on hidden buttons in UI for authorization.
+
+---
+
+# 70. Data Privacy
+
+Sensitive data includes:
+
+* Phone
+* Email
+* Home address
+* Identity documents
+* Birth documents
+* Marriage documents
+* Death documents
+* Private chats
+
+These must not be publicly accessible.
+
+---
+
+# 71. File Storage
+
+Support:
+
+* Profile photos
+* Evidence documents
+* Community images
+* Event cards
+* Cultural images
+* Historical documents
+
+Separate public and private storage.
+
+Private evidence must require authorized access.
+
+---
+
+# 72. Localization
+
+Primary application languages:
+
+* Nepali
+* English
+
+Build localization support from the start.
+
+All user-facing text should use translation keys.
+
+Do not hard-code English strings throughout the UI.
+
+---
+
+# 73. Nepali Names
+
+Support Unicode Nepali/Devanagari fully.
+
+Do not require users to provide only Latin/English names.
+
+Allow both:
+
+```text
+नेपाली नाम
+English Name
+```
+
+---
+
+# 74. Accessibility
+
+Ensure:
+
+* Large enough touch targets
+* Readable text
+* Screen-reader-friendly labels where possible
+* Good contrast
+* Clear error messages
+* Simple navigation suitable for elderly users
+
+The app will have users across multiple age groups.
+
+---
+
+# 75. Performance
+
+Requirements:
+
+* Paginate long lists.
+* Lazy-load family branches.
+* Do not load complete national genealogy tree on app launch.
+* Cache appropriate public/static content.
+* Optimize images.
+* Use background processing for expensive notifications or relationship calculations where needed.
+
+---
+
+# 76. Offline/Low Connectivity Consideration
+
+Nepal may have variable network quality.
+
+At minimum:
+
+* Show loading states.
+* Handle API failures gracefully.
+* Retry safe operations.
+* Cache cultural content and recently viewed data where practical.
+* Never lose an unsent genealogy form without warning.
+
+Full offline genealogy editing is not required for MVP.
+
+---
+
+# 77. Error Handling
+
+Use clear user-friendly errors.
+
+Examples:
+
+> Unable to load family tree. Please try again.
+
+> This relationship update requires administrator approval.
+
+> A similar person may already exist.
+
+> You do not have permission to view this information.
+
+Never show raw backend stack traces.
+
+---
+
+# 78. Notifications Backend
+
+Use asynchronous/background jobs for:
+
+* Push notifications
+* Birthday reminders
+* Event reminders
+* Approved death notifications
+* Broadcast announcements
+
+Avoid making large notification operations block API requests.
+
+---
+
+# 79. Scheduled Jobs
+
+Support scheduled processing for:
+
+* Upcoming birthdays
+* Event reminders
+* Shraddha reminders
+* Expired community posts
+* Notification delivery
+* Data consistency checks if required
+
+---
+
+# 80. Data Integrity Rules
+
+At minimum:
+
+1. A person cannot be their own parent.
+2. A person cannot be their own spouse.
+3. Prevent obvious circular parent relationships.
+4. Parent relationship must not create impossible genealogy loops.
+5. Duplicate spouse relationship should not be created.
+6. Approved relationship changes must be audited.
+7. Merged persons cannot remain as separate active genealogy nodes.
+8. Deceased status must not delete genealogy.
+9. Account deletion must not automatically delete genealogy history.
+
+---
+
+# 81. Circular Genealogy Validation
+
+Before approving parent-child relationship:
+
+Check whether adding the relationship would cause a cycle.
+
+Example invalid:
+
+```text
+A parent of B
+B parent of C
+C parent of A
+```
+
+Reject this relationship.
+
+---
+
+# 82. Age Validation
+
+Use warnings rather than absolute rejection for historical genealogy.
+
+Example:
+
+If recorded parent birth date occurs after child's birth:
+
+Display validation error.
+
+For approximate historical dates, allow admin override with reason.
+
+---
+
+# 83. Admin Overrides
+
+Authorized Genealogy Admin may override validation in exceptional historical cases.
+
+Override must require:
+
+* Reason
+* Audit log
+
+---
+
+# 84. Reports
+
+Initial administrative reports:
+
+* Registered users by district
+* People by branch
+* Pending genealogy changes
+* Duplicate candidates
+* Birth records
+* Marriage records
+* Death records
+* Community activity
+* Reported posts
+
+Do not expose sensitive personal details in aggregate exports unnecessarily.
+
+---
+
+# 85. Export
+
+Future-ready architecture should support genealogy export.
+
+Potential formats later:
+
+* PDF family tree
+* CSV
+* GEDCOM
+
+GEDCOM export/import is not mandatory for MVP but do not create a data model that makes it impossible later.
+
+---
+
+# 86. Backup and Recovery
+
+Database must be backed up regularly.
+
+Critical genealogy data must support recovery.
+
+Production environment should use automated backups.
+
+---
+
+# 87. Environments
+
+Prefer:
+
+* Development
+* Staging/UAT
+* Production
+
+Do not test destructive genealogy operations directly in production.
+
+---
+
+# 88. Logging
+
+Backend should log:
+
+* Errors
+* Authentication failures
+* Background-job errors
+* Integration failures
+
+Do not log passwords, OTPs, tokens or private document contents.
+
+---
+
+# 89. API Design
+
+Use consistent versioned APIs.
+
+Example:
+
+```text
+/api/v1/auth
+/api/v1/users
+/api/v1/people
+/api/v1/relationships
+/api/v1/genealogy
+/api/v1/change-requests
+/api/v1/events
+/api/v1/posts
+/api/v1/notifications
+/api/v1/chat
+/api/v1/content
+/api/v1/admin
+```
+
+---
+
+# 90. Suggested Main Database Entities
+
+Create at minimum:
+
+```text
+users
+roles
+user_roles
+
+people
+person_relationships
+family_branches
+
+genealogy_change_requests
+genealogy_change_items
+genealogy_evidence
+
+birth_records
+marriage_records
+death_records
+
+followed_people
+followed_branches
+
+posts
+post_media
+post_reports
+
+events
+event_invitees
+event_rsvps
+
+notifications
+notification_preferences
+
+conversations
+conversation_members
+messages
+
+content_categories
+content_articles
+content_media
+
+jutho_rules
+jutho_calculations
+
+audit_logs
+
+files
+```
+
+Adjust names based on chosen database conventions.
+
+---
+
+# 91. Database Indexing
+
+Create indexes for frequently searched fields.
+
+Examples:
+
+* person name
+* Nepali name
+* branch
+* parent relationships
+* linked user
+* post category
+* event date
+* request status
+* notification recipient
+
+Relationship traversal must be optimized.
+
+---
+
+# 92. Approval Notifications
+
+Requester should receive notifications when request becomes:
+
+* Under review
+* Needs information
+* Approved
+* Rejected
+
+Include admin comment when appropriate.
+
+---
+
+# 93. Needs Information Workflow
+
+Admin should not always need to reject incomplete submissions.
+
+Allow:
+
+```text
+NEEDS_INFORMATION
+```
+
+Admin sends comment.
+
+Requester updates request.
+
+Request returns to review.
+
+---
+
+# 94. Comments on Genealogy Requests
+
+Allow communication between requester and genealogy reviewer.
+
+Do not use general chat for this.
+
+Keep request-specific discussion within the request history.
+
+---
+
+# 95. Person Claiming
+
+A registered member may claim an existing genealogy record as themselves.
+
+Workflow:
+
+```text
+User searches existing person
+      ↓
+Request to claim profile
+      ↓
+Verification
+      ↓
+Admin approval
+      ↓
+User linked to Person
+```
+
+Avoid duplicate profile creation.
+
+---
+
+# 96. Family Suggestions
+
+After account linking:
+
+Suggest:
+
+* Father
+* Mother
+* Siblings
+* Spouse
+* Children
+
+based on existing genealogy.
+
+Do not automatically change genealogy without approval.
+
+---
+
+# 97. Community Safety
+
+Support:
+
+* Block user
+* Report user
+* Report post
+* Admin suspension
+* Account restriction
+
+Blocked users should not be able to initiate new chats with blocker.
+
+---
+
+# 98. Account Status
+
+Support:
+
+* ACTIVE
+* PENDING_VERIFICATION
+* SUSPENDED
+* DEACTIVATED
+* BANNED
+
+---
+
+# 99. Content Status
+
+Community post status:
+
+* DRAFT
+* PUBLISHED
+* HIDDEN
+* REMOVED
+* EXPIRED
+* PENDING_REVIEW
+
+---
+
+# 100. Event Status
+
+* DRAFT
+* PUBLISHED
+* CANCELLED
+* COMPLETED
+
+Notify invitees when an event is cancelled.
+
+---
+
+# 101. Cultural Content Status
+
+* DRAFT
+* PUBLISHED
+* ARCHIVED
+
+Support scheduled publication later if easy to implement.
+
+---
+
+# 102. Media Optimization
+
+Automatically optimize uploaded images.
+
+Set reasonable upload limits.
+
+Reject unsupported/dangerous file types.
+
+Validate MIME type server-side.
+
+---
+
+# 103. UX Principle
+
+The app must remain simple enough for non-technical and elderly family members.
+
+Avoid overcrowded screens.
+
+Prefer:
+
+* Large buttons
+* Clear labels
+* Nepali terminology
+* Guided flows
+* Search over complex menus
+
+---
+
+# 104. Onboarding
+
+After registration, onboarding should explain:
+
+1. Complete your profile.
+2. Find yourself in the family tree.
+3. Claim or request your genealogy record.
+4. Explore your family.
+5. Follow relevant members/branches.
+6. Configure notifications.
+
+Allow onboarding to be skipped.
+
+---
+
+# 105. Empty States
+
+Examples:
+
+Family tree:
+
+> Your genealogy record has not been linked yet.
+
+Posts:
+
+> No community updates available.
+
+Events:
+
+> You have no upcoming invitations.
+
+Requests:
+
+> You have not submitted any genealogy changes.
+
+---
+
+# 106. MVP Scope
+
+Build the project in phases.
+
+## Phase 1 — Core MVP
+
+Must include:
+
+* Authentication
+* User profile
+* Nepali/English localization foundation
+* Person records
+* Family branches
+* Parent-child relationships
+* Spouse relationships
+* Family tree
+* Person search
+* Account-to-person linking
+* Genealogy change request
+* Genealogy admin approval
+* Birth registration
+* Marriage registration
+* Death registration
+* Automatic relationship finder
+* Cultural content
+* Basic notifications
+* Admin portal
+* Audit logs
+* Privacy permissions
+
+---
+
+# 107. Phase 2
+
+Add:
+
+* Follow people/family
+* Birthday reminders
+* Death notifications
+* Shraddha reminders
+* Jutho calculator
+* Community posts
+* Moderation
+* Events
+* Invitations
+* RSVP
+* Maps
+* Advanced notification preferences
+
+---
+
+# 108. Phase 3
+
+Add:
+
+* One-to-one chat
+* Family group chats
+* Advanced duplicate detection
+* Historical archive
+* Advanced genealogy analytics
+* PDF family-tree export
+* GEDCOM import/export
+* Advanced search
+* Card templates
+
+---
+
+# 109. MVP Acceptance Criteria
+
+The MVP is successful when:
+
+1. A user can register.
+2. A user can create/manage a profile.
+3. A user can search for an existing genealogy person.
+4. A user can request to link their account to that person.
+5. Admin can approve the linkage.
+6. User can see parents, children and spouses.
+7. User can navigate the family tree.
+8. User can submit a new person.
+9. User can propose a genealogy correction.
+10. Admin can approve/reject requests.
+11. Approved changes appear in the family tree.
+12. All changes create audit logs.
+13. User can select another person and calculate relationship.
+14. Birth can be reported and approved.
+15. Marriage can be reported and approved.
+16. Death can be reported and approved.
+17. Admin can manage cultural articles.
+18. Users can view cultural articles.
+19. Privacy rules are enforced server-side.
+20. The application works on Android and iOS.
+21. The administration portal works in modern desktop browsers.
+
+---
+
+# 110. Relationship Engine Test Cases
+
+Create automated tests.
+
+Example 1:
+
+```text
+A → father → B
+```
+
+Expected:
+
+B is A's father.
+
+Example 2:
+
+```text
+A → father → B
+B → father → C
+```
+
+Expected:
+
+C is A's grandfather.
+
+Example 3:
+
+```text
+A → father → B
+B → brother → C
+C → daughter → D
+```
+
+Expected:
+
+D is A's cousin.
+
+Example 4:
+
+No graph path.
+
+Expected:
+
+No known verified relationship.
+
+---
+
+# 111. Genealogy Integrity Tests
+
+Automated tests must verify:
+
+* Cannot make a person their own parent.
+* Cannot create circular ancestry.
+* Cannot duplicate identical spouse relationship.
+* Merge preserves relationships.
+* Approval applies exactly once.
+* Rejected request changes nothing.
+* Deleting user account does not delete genealogy person.
+* Deceased person remains visible in genealogy.
+
+---
+
+# 112. Permission Tests
+
+Verify:
+
+* Member cannot access admin APIs.
+* Moderator cannot change genealogy unless separately authorized.
+* Family Representative cannot access unrelated restricted branch data.
+* Private evidence cannot be downloaded by normal members.
+* User cannot edit another person's private profile directly.
+* Super Admin can perform configured administration.
+
+---
+
+# 113. Privacy Tests
+
+Verify:
+
+If phone visibility = Only Me:
+
+Other members cannot retrieve the value through UI or API.
+
+If profile visibility = Family:
+
+Unrelated user cannot access restricted fields.
+
+Privacy must be enforced in backend responses.
+
+---
+
+# 114. Push Notifications
+
+Use a platform-appropriate push notification provider.
+
+Store device tokens securely.
+
+Support multiple devices per user.
+
+Allow token revocation when user logs out or removes the app.
+
+---
+
+# 115. Date Handling
+
+Store timestamps in UTC.
+
+Display dates using user timezone.
+
+Genealogy/cultural dates may additionally maintain BS date representation.
+
+Do not store ambiguous date strings as the only authoritative date.
+
+---
+
+# 116. Timezone
+
+Default community timezone:
+
+Asia/Kathmandu
+
+But architecture should allow users living abroad.
+
+---
+
+# 117. Future Scalability
+
+Design initially for tens of thousands of genealogy people and potential growth to hundreds of thousands.
+
+Avoid architecture where:
+
+* Complete tree is downloaded to every phone.
+* Every relationship pair is permanently stored.
+* All notifications are sent synchronously.
+* Every search scans full database.
+
+---
+
+# 118. Analytics
+
+Use privacy-conscious analytics.
+
+Useful metrics:
+
+* Daily active users
+* Family tree views
+* Genealogy requests
+* Search usage
+* Cultural content views
+* Event engagement
+
+Do not send sensitive genealogy or document content to analytics providers.
+
+---
+
+# 119. Branding
+
+Use a culturally respectful visual identity.
+
+Suggested design direction:
+
+* Clean
+* Modern
+* Nepali cultural influence
+* Family-oriented
+* Suitable for young and elderly users
+* Avoid overly flashy social-media styling
+
+Provide light theme initially.
+
+Dark theme may be added later.
+
+---
+
+# 120. Technical Quality Expectations
+
+Generated implementation must:
+
+* Use clean modular code.
+* Avoid one huge file.
+* Separate UI/business/data logic.
+* Have reusable components.
+* Use centralized API handling.
+* Use validation schemas.
+* Use database migrations/schema versioning where supported.
+* Include automated tests for critical genealogy logic.
+* Include seed/demo data.
+* Include setup documentation.
+
+---
+
+# 121. Demo Data
+
+Create fictional test genealogy only.
+
+Example:
+
+```text
+Hari Adhikari + Maya Adhikari
+          |
+   ----------------
+   |              |
+Ram Adhikari   Shyam Adhikari
+   |
+Sita Adhikari
+```
+
+Create enough sample data to demonstrate:
+
+* 4-5 generations
+* Multiple siblings
+* Multiple spouses
+* Maternal and paternal relationships
+* Living people
+* Deceased people
+* Family branches
+
+Never use real sensitive personal information for demo data.
+
+---
+
+# 122. Seed Admin
+
+Development environment should contain:
+
+* Super Admin
+* Genealogy Admin
+* Moderator
+* Family Representative
+* Member
+
+Provide documented development credentials only for local/demo environment.
+
+Never ship default passwords to production.
+
+---
+
+# 123. Documentation
+
+Generate:
+
+* README
+* Architecture overview
+* Local development instructions
+* Environment variables
+* Database model documentation
+* API documentation
+* Role/permission documentation
+* Genealogy algorithm explanation
+* Deployment instructions
+
+---
+
+# 124. Development Requirement for Emergent
+
+Do NOT attempt to generate all features at once as one monolithic implementation.
+
+Create the project incrementally.
+
+Development order:
+
+```text
+1. Project architecture
+2. Database schema
+3. Authentication
+4. Users and profiles
+5. Person records
+6. Genealogy relationships
+7. Family tree
+8. Relationship engine
+9. Genealogy approval workflow
+10. Birth/marriage/death
+11. Admin portal
+12. Cultural content
+13. Notifications
+14. Follow system
+15. Jutho engine
+16. Community feed
+17. Events/invitations
+18. Chat
+19. Testing/security
+20. Production deployment
+```
+
+After each major module:
+
+* Run tests.
+* Verify database integrity.
+* Verify authorization.
+* Fix errors before moving to the next module.
+
+---
+
+# 125. Critical Instructions to the AI Builder
+
+Do not make unapproved genealogy modifications.
+
+Do not assume every genealogy person has a user account.
+
+Do not store the entire family tree as one nested object.
+
+Do not hard-code Jutho rules.
+
+Do not expose private evidence documents publicly.
+
+Do not allow every community post to trigger broadcast notification.
+
+Do not permanently delete historical genealogy when an account is deleted.
+
+Do not calculate relationships using names.
+
+Relationships must use immutable Person IDs.
+
+Do not let frontend-only restrictions determine permissions.
+
+Always enforce permissions on the backend.
+
+Do not silently merge people.
+
+Do not infer a relationship when no verified path exists.
+
+Do not treat community posts as genealogy records.
+
+Keep social/community data separate from verified genealogy data.
+
+---
+
+# 126. Final Product Goal
+
+The completed platform should allow a member to experience the following journey:
+
+```text
+Register
+   ↓
+Find or create genealogy identity
+   ↓
+Get verified/linked
+   ↓
+Open Family Tree
+   ↓
+Explore ancestors and descendants
+   ↓
+Select another person
+   ↓
+See automatic relationship
+   ↓
+Follow family members
+   ↓
+Receive relevant life-event notifications
+   ↓
+Contribute genealogy updates
+   ↓
+Admin verifies updates
+   ↓
+Participate in family/community events
+   ↓
+Access cultural and historical knowledge
+```
+
+The most important priority is preserving **accurate, traceable, verified genealogy data**.
+
+Social features such as posts and chat are secondary.
+
+When a design or engineering trade-off exists, prioritize:
+
+1. Genealogy data integrity
+2. Privacy
+3. Security
+4. Clear administration
+5. Ease of use
+6. Performance
+7. Social features
