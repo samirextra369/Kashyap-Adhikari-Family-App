@@ -1,6 +1,6 @@
-# [Project name]
+# Kashyap Adhikari Family Platform
 
-_Replace the heading above with the project's name, and this line with one sentence describing what this app does for users._
+Kashyap Family helps Nepal's Kashyap Adhikari community preserve genealogy, discover family connections, and carry cultural knowledge forward.
 
 ## Run & Operate
 
@@ -22,23 +22,29 @@ _Replace the heading above with the project's name, and this line with one sente
 
 ## Where things live
 
-_Populate as you build — short repo map plus pointers to the source-of-truth file for DB schema, API contracts, theme files, etc._
+- `artifacts/kashyap-family` — Expo mobile app for the member experience.
+- `artifacts/api-server` — shared Express API foundation for later server-backed phases.
+- `lib/api-spec/openapi.yaml` — source of truth for future API contracts.
+- `artifacts/kashyap-family/constants/colors.ts` — mobile semantic theme tokens.
 
 ## Architecture decisions
 
-_Populate as you build — non-obvious choices a reader couldn't infer from the code (3-5 bullets)._
+- The product is being delivered in phases; the first mobile build focuses on the family-first experience before social features.
+- Genealogy remains a separate domain from community posts and chat in the planned architecture.
+- The mobile foundation uses Expo Router and a light, culturally respectful visual language with Nepali/English readiness.
 
 ## Product
 
-_Describe the high-level user-facing capabilities of this app once they exist._
+Phase 1 mobile foundation includes Home, Family, Culture, and Profile tabs; fictional family-tree demo data; relative search; relationship-finder entry point; culture articles; notification and language preferences; and AsyncStorage-backed preferences.
 
 ## User preferences
 
-_Populate as you build — explicit user instructions worth remembering across sessions._
+- Build incrementally from the supplied requirements, prioritizing verified genealogy data, privacy, and clarity over secondary social features.
 
 ## Gotchas
 
-_Populate as you build — sharp edges, "always run X before Y" rules._
+- Keep demo genealogy fictional until real data governance and backend approval workflows are implemented.
+- The mobile preview is an Expo app and should be run through its managed workflow rather than direct Expo shell commands.
 
 ## Pointers
 
